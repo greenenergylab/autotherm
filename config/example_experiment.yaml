@@ -1,0 +1,42 @@
+# AutoTherm Experiment Configuration
+# Copy this file and adjust for your measurement campaign
+
+# Measurement range
+temperature:
+  min_K: 253.15      # -20°C
+  max_K: 533.15      # 260°C
+  # Initial isotherms (OED may add more)
+  isotherms: [253.15, 273.15, 293.15, 313.15, 353.15, 393.15, 453.15, 533.15]
+
+pressure:
+  min_MPa: 0.1
+  max_MPa: 100.0
+
+# Target accuracy for equation of state
+accuracy:
+  density_relative: 0.001          # 0.1%
+  speed_of_sound_relative: 0.0005  # 0.05%
+  eos_max_deviation: 0.002         # 0.2% - stop criterion
+
+# Stabilization before measurement
+stabilization:
+  temperature_tolerance_K: 0.02
+  pressure_tolerance_MPa: 0.01
+  wait_time_s: 300          # additional wait after stable
+  max_wait_s: 1800          # timeout
+
+# Measurement settings
+measurement:
+  n_readings: 10            # readings per point for statistics
+  reading_interval_s: 1.0
+
+# OED algorithm settings
+oed:
+  min_points_per_isotherm: 5
+  max_points_per_isotherm: 20
+  replan_threshold: 0.1     # replan if >10% change
+
+# TiSR settings
+tisr:
+  max_terms: 20
+  enforce_thermodynamic_consistency: true
