@@ -27,28 +27,27 @@ Die beiden kommunizieren über einen JSON-RPC Server.
 Der Messablauf ist ein geschlossener Regelkreis:
 
 ```
-    ┌──────────────────────────────────────────────────────────┐
-    │                                                          │
-    ▼                                                          │
-┌───────┐    ┌───────┐    ┌────────┐    ┌───────┐              │
-│  OED  │───▶│ Messe │───▶│Auswert.│───▶│ TiSR  │              │
-└───────┘    └───────┘    └────────┘    └───┬───┘              │
-    ▲                                       │                  │
-    │                                       ▼                  │
-    │                              ┌────────────────┐          │
-    │                              │  Genau genug?  │          │
-    │                              └───────┬────────┘          │
-    │                                      │                   │
-    │                           Nein ──────┴────── Ja          │
-    │                             │                 │          │
-    │                             ▼                 ▼          │
-    └─────────────────── Plan anpassen          FERTIG         │
+
+Input:               ┌───────┐     ┌─-──────┐     ┌────────-┐     ┌─-──────┐           
+- Vorläufige EOS ──▶ │  OED  │──-─▶│ Messen │─-──▶│Auswerten│─-──▶│  TiSR  │ 
+- Messbereich        └───────┘     └──-─────┘     └────────-┘     └──-─┬───┘           
+                         ▲                                             │                
+                         │                                             ▼                
+                         │                                    ┌────────────────┐          
+                         │                                    │  Genau genug?  │◀───── Input: Genauigkeitskriterien, Geltungsbereich, etc.
+                         │                                    └───────┬────────┘      
+                         │                                            │        
+                         │                                 Nein ──────┴────── Ja
+                         │                                  │                 │
+                         │                                  ▼                 ▼
+                         └─────────────────           Neuberechnen des      FERTIG
+                                             Messplans mit vorläufiger EOS
                                                                
 ```
 
-1. **OED** berechnet optimale Messpunkte (T, p)
-2. **Messen**: Anlage fährt Punkt an, misst Dichte und Schallgeschwindigkeit
-3. **Auswertung**: Unsicherheitsrechnung, Daten speichern
+1. **OED** berechnet optimale Messpunkte und gibt diese als (_T_, _p_)-Matrix aus.
+2. **Messen**: Gemessen wird entlang von Isothermen. Die Automatisierung stellt die Temperatur ein, sobald _T_ stabil sit wird der maximale Druck eingestellt. Sobald _T_ und _p_ stabil sind wird ein Messpunkt aufgenommen, dafür wird über 10 minuten _T_, _p_ und _tau_ aufgezeichnet. Die Automatisierung reduziert dann den Druck und wartet auf Gleichgerwicht.
+3. **Auswertung**: Dichten berechnen, Unsicherheitsrechnung, Daten speichern.
 4. **TiSR** fittet Zustandsgleichung an alle bisherigen Daten
 5. **Prüfung**: Erfüllt die Gleichung die Genauigkeitsvorgaben?
    - Ja → Fertig
